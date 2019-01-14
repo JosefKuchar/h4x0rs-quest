@@ -8,6 +8,7 @@ export default class GameScreen extends Screen {
     score: number;
     timeLeft: number;
     nodes: Node[];
+    currentNode: Node;
 
     constructor(ctx: CanvasRenderingContext2D, game: Game) {
         super(ctx);
@@ -15,6 +16,7 @@ export default class GameScreen extends Screen {
         this.score = 500;
         this.timeLeft = 50;
         this.nodes = new Array();
+        this.currentNode = new Node(0,0,'err',this.ctx); // Placeholder node
         this.generateNodes();
     }
 
@@ -24,6 +26,14 @@ export default class GameScreen extends Screen {
 
         // Nodes
         this.nodes.forEach(node => node.render());
+
+        // Current node
+        this.ctx.setLineDash([]);
+        this.ctx.fillStyle = Colors.Foreground;
+        this.ctx.beginPath();
+        this.ctx.arc(this.currentNode.x, this.currentNode.y, 6, 0, 2 * Math.PI);
+        this.ctx.closePath();
+        this.ctx.fill();
 
         // Score
         this.ctx.textAlign = 'start';
@@ -42,11 +52,35 @@ export default class GameScreen extends Screen {
     }
 
     generateNodes() {
-        this.nodes.push(new Node(512, 700, '127.0.0.1', this.ctx));
-        this.nodes.push(new Node(512, 500, this.randomIp(), this.ctx));
+        let start = new Node(512, 650, '127.0.0.1', this.ctx);
+        this.nodes.push(start);
+        
+        // Generate grid
+        for (let x = 0; x < 5; x++) {
+            for (let y = 0; y < 4; y++) {
+                if (x == 2 && y == 0) continue;
+                if (Math.random() <= 0.2) {
+                    const node = new Node(100 + x * 206, 650 - y * 170, this.randomIp(), this.ctx);
+                    this.nodes.push(node);
+                }
+            }
+        }
 
         // Reveal the first node
-        this.nodes[0].reveal();
+        start.reveal();
+        start.connected = true;
+
+        // Generate connections
+        /*
+        let queue = [start]
+
+        if (queue.length > 0) {
+            const current = queue.shift();
+            this.nodes.filter(node => !node.connected)
+        }*/
+
+        // Set first node as current
+        this.currentNode = start;
     }
 
     randomIp() {

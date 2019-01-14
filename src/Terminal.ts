@@ -16,7 +16,12 @@ export default class Terminal {
 
         inputElement.onkeydown = e => {
             if (e.keyCode == 13) {
-                this.writeLine('h4x0r@localhost.exe&gt; ' + inputElement.value);
+                this.writeLine(
+                    'h4x0r@' +
+                        this.game.screens.game.currentNode.ip +
+                        '&gt; ' +
+                        inputElement.value
+                );
 
                 let args = inputElement.value.split(' ');
 
@@ -45,11 +50,35 @@ export default class Terminal {
     }
 
     handle(args: string[]) {
+        // TODO: Check if allowed
+
         switch (args[0]) {
             case 'startx':
                 const result = this.game.boot();
                 if (result) this.bootSequence();
                 else return 'System: Game is already running!';
+                break;
+            case 'nmap':
+                return (
+                    'FOUND:\n' +
+                    this.game.screens.game.currentNode.revealOthers()
+                );
+                break;
+            case 'ssh':
+                if (args[1]) {
+                    let node = this.game.screens.game.nodes.find(node => {
+                        return args[1] === node.ip;
+                    });
+
+                    if (node != undefined) {
+                        this.game.screens.game.currentNode = node;
+                        return 'Connected to ' + args[1];
+                    }
+                    else
+                        return 'IP not found: ' + args[1];
+                } else {
+                    return "You must specify IP e.g. 'ip 127.0.0.1'";
+                }
                 break;
             case 'help':
                 return (
@@ -58,7 +87,7 @@ export default class Terminal {
                     'exit - disconnect from current node\n' +
                     'exploit - escalate privileges\n' +
                     'help - list all available commands\n' +
-                    'scan - reveal all available nodes\n' +
+                    'nmap - reveal all available nodes\n' +
                     'ssh - connect to a node\n' +
                     'startx - start the game'
                 );

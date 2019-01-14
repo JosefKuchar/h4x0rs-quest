@@ -5,16 +5,25 @@ export default class Node {
     y: number;
     ctx: CanvasRenderingContext2D;
     ip: string;
-    connected: Node[];
+    connections: Node[];
     revealed: boolean;
-    
-    constructor(x: number, y: number, ip: string, ctx: CanvasRenderingContext2D) {
+    scanned: boolean;
+    connected: boolean;
+
+    constructor(
+        x: number,
+        y: number,
+        ip: string,
+        ctx: CanvasRenderingContext2D
+    ) {
         this.x = x;
         this.y = y;
         this.ctx = ctx;
         this.ip = ip;
-        this.connected = new Array();
+        this.connections = new Array();
         this.revealed = false;
+        this.scanned = false;
+        this.connected = false;
     }
 
     render() {
@@ -23,6 +32,8 @@ export default class Node {
         this.ctx.strokeStyle = Colors.Foreground;
         this.ctx.lineWidth = 4;
         this.ctx.beginPath();
+        if (!this.scanned) this.ctx.setLineDash([6, 4]);
+        else this.ctx.setLineDash([]);
         this.ctx.arc(this.x, this.y, 15, 0, 2 * Math.PI);
         this.ctx.closePath();
         this.ctx.textAlign = 'center';
@@ -30,6 +41,7 @@ export default class Node {
         this.ctx.fillStyle = Colors.Foreground;
         this.ctx.fillText(this.ip, this.x, this.y + 50);
         this.ctx.stroke();
+        this.ctx.setLineDash([]);
     }
 
     reveal() {
@@ -37,6 +49,12 @@ export default class Node {
     }
 
     revealOthers() {
-        this.connected.forEach(node => node.reveal());
+        let ips = new Array();
+        this.connections.forEach(node => {
+            node.reveal();
+            ips.push(node.ip);
+        });
+        this.scanned = true;
+        return ips.join('\n');
     }
 }
