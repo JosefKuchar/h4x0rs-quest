@@ -71,13 +71,20 @@ export default class GameScreen extends Screen {
         start.connected = true;
 
         // Generate connections
-        /*
         let queue = [start]
 
-        if (queue.length > 0) {
-            const current = queue.shift();
-            this.nodes.filter(node => !node.connected)
-        }*/
+        while (queue.length > 0) {
+            let current = queue.shift() as Node;
+
+            do {
+                let nodes = this.nodes.filter(node => !node.connected);
+                if (nodes.length == 0) break;
+                let node = nodes[Math.floor(Math.random() * nodes.length)];
+                current.connections.push(node);
+                node.connected = true;
+                queue.push(node);
+            } while (Math.random() < 0.5)
+        }
 
         // Set first node as current
         this.currentNode = start;
