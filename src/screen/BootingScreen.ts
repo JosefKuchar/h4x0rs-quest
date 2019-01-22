@@ -16,7 +16,7 @@ export default class BootingScreen extends Screen {
     }
 
     render() {
-        this.ctx.fillStyle = 'black';
+        this.ctx.fillStyle = Colors.Background;
         this.ctx.fillRect(0, 0, 1024, 768);
         this.ctx.strokeStyle = Colors.Foreground;
         this.ctx.rect(50, 768 / 2 - 50 / 2, 1024 - 50 * 2, 100);
@@ -25,6 +25,7 @@ export default class BootingScreen extends Screen {
         this.ctx.fillRect(50, 768 / 2 - 50 / 2, (this.progress / this.total) * (1024 - 50 * 2), 100);
 
         if (this.total > 0 && this.progress == this.total) {
+            this.game.screens.game.start();
             this.game.state = State.Game;
         }
     }

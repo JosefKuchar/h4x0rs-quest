@@ -1,7 +1,9 @@
 import Screen from '../Screen';
 import { Colors } from '../Colors';
-import Game from '../Game';
+import Game, { State } from '../Game';
 import Node from '../Node';
+import Exploit from '../Exploit';
+import AutomaticExploit from '../exploit/AutomaticExploit';
 
 export default class GameScreen extends Screen {
     game: Game;
@@ -9,15 +11,26 @@ export default class GameScreen extends Screen {
     timeLeft: number;
     nodes: Node[];
     currentNode: Node;
+    exploitRunning: boolean;
+    currentExploit: Exploit | undefined;
 
     constructor(ctx: CanvasRenderingContext2D, game: Game) {
         super(ctx);
         this.game = game;
-        this.score = 500;
-        this.timeLeft = 50;
+        this.score = 0;
+        this.timeLeft = 60;
         this.nodes = new Array();
         this.currentNode = new Node(0,0,'err',this.ctx); // Placeholder node
         this.generateNodes();
+        this.exploitRunning = false;
+        this.currentExploit = new AutomaticExploit(this.ctx, this);
+    }
+
+    start() {
+        // Time countdown
+        setInterval(() => {
+            this.timeLeft--;
+        }, 1000);
     }
 
     render() {
@@ -49,6 +62,18 @@ export default class GameScreen extends Screen {
             994,
             60
         );
+
+        // Exploit
+        if (this.exploitRunning === true) {
+            if (this.currentExploit)
+                this.currentExploit.render();
+        }
+
+        // End the game
+        if (this.timeLeft <= 0) {
+            this.game.state = State.End;
+            this.game.screens.end.score = this.score;
+        }
     }
 
     generateNodes() {
@@ -92,5 +117,17 @@ export default class GameScreen extends Screen {
 
     randomIp() {
         return new Array(4).fill(0).map(x => Math.floor(Math.random() * 256)).join('.');
+    }
+
+    exploit() {
+        this.exploitRunning = true;
+        this.currentExploit = new AutomaticExploit(this.ctx, this);
+    }
+
+    exploitDone() {
+        this.exploitRunning = false;
+        this.currentNode.root = true;
+        this.score += 50;
+        this.currentExploit = undefined;
     }
 }

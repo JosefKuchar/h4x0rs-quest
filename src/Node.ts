@@ -9,6 +9,7 @@ export default class Node {
     revealed: boolean;
     scanned: boolean;
     connected: boolean;
+    root: boolean;
 
     constructor(
         x: number,
@@ -24,6 +25,7 @@ export default class Node {
         this.revealed = false;
         this.scanned = false;
         this.connected = false;
+        this.root = false;
     }
 
     render() {
@@ -46,6 +48,10 @@ export default class Node {
 
     reveal() {
         this.revealed = true;
+    }
+
+    exploit() {
+        
     }
 
     revealOthers() {

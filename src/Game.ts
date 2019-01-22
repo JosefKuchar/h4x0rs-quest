@@ -1,11 +1,13 @@
 import TurnOffScreen from './screen/TurnOffScreen';
 import BootingScreen from './screen/BootingScreen';
 import GameScreen from './screen/GameScreen';
+import EndScreen from './screen/EndScreen';
 
 export enum State {
     TurnOff,
     Booting,
-    Game
+    Game,
+    End
 }
 
 export default class Game {
@@ -15,7 +17,8 @@ export default class Game {
     screens: {
         turnOff: TurnOffScreen;
         booting: BootingScreen;
-        game: GameScreen
+        game: GameScreen;
+        end: EndScreen;
     };
 
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
@@ -25,7 +28,8 @@ export default class Game {
         this.screens = {
             turnOff: new TurnOffScreen(ctx),
             booting: new BootingScreen(ctx, this),
-            game: new GameScreen(ctx, this)
+            game: new GameScreen(ctx, this),
+            end: new EndScreen(ctx)
         };
     }
 
@@ -39,6 +43,9 @@ export default class Game {
                 break;
             case State.Game:
                 this.screens.game.render();
+                break;
+            case State.End:
+                this.screens.end.render();
                 break;
         }
     }

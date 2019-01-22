@@ -1,4 +1,4 @@
-import Game from './Game';
+import Game, { State } from './Game';
 
 export default class Terminal {
     terminalElement: HTMLDivElement;
@@ -50,53 +50,63 @@ export default class Terminal {
     }
 
     handle(args: string[]) {
-        // TODO: Check if allowed
+        if (args[0] == 'startx') {
+            const result = this.game.boot();
+            if (result) this.bootSequence();
+            else return 'System: Game is already running!';
+        } else {
+            if (this.game.state == State.Game) {
+                switch (args[0]) {
+                    case 'nmap':
+                        return (
+                            'FOUND:\n' +
+                            this.game.screens.game.currentNode.revealOthers()
+                        );
+                        break;
+                    case 'ssh':
+                        if (args[1]) {
+                            let node = this.game.screens.game.nodes.find(
+                                node => {
+                                    return args[1] === node.ip;
+                                }
+                            );
 
-        switch (args[0]) {
-            case 'startx':
-                const result = this.game.boot();
-                if (result) this.bootSequence();
-                else return 'System: Game is already running!';
-                break;
-            case 'nmap':
-                return (
-                    'FOUND:\n' +
-                    this.game.screens.game.currentNode.revealOthers()
-                );
-                break;
-            case 'ssh':
-                if (args[1]) {
-                    let node = this.game.screens.game.nodes.find(node => {
-                        return args[1] === node.ip;
-                    });
-
-                    if (node != undefined) {
-                        this.game.screens.game.currentNode = node;
-                        return 'Connected to ' + args[1];
-                    }
-                    else
-                        return 'IP not found: ' + args[1];
-                } else {
-                    return "You must specify IP e.g. 'ip 127.0.0.1'";
+                            if (node != undefined) {
+                                this.game.screens.game.currentNode = node;
+                                return 'Connected to ' + args[1];
+                            } else return 'IP not found: ' + args[1];
+                        } else {
+                            return "You must specify IP e.g. 'ssh 127.0.0.1'";
+                        }
+                        break;
+                    case 'exploit':
+                        if (this.game.screens.game.currentNode.root) {
+                            return 'System: Machine already rooted!';
+                        } else {
+                            this.game.screens.game.exploit();
+                        }
+                        break;
+                    case 'help':
+                        return (
+                            'AVAILABLE COMMANDS: \n' +
+                            'clear - clear the console\n' +
+                            'exit - disconnect from current node\n' +
+                            'exploit - escalate privileges\n' +
+                            'help - list all available commands\n' +
+                            'nmap - reveal all available nodes\n' +
+                            'ssh - connect to a node\n' +
+                            'startx - start the game'
+                        );
+                    default:
+                        return (
+                            'System: ' +
+                            args[0] +
+                            " - Command not found, type 'help' to get all available commands"
+                        );
                 }
-                break;
-            case 'help':
-                return (
-                    'AVAILABLE COMMANDS: \n' +
-                    'clear - clear the console\n' +
-                    'exit - disconnect from current node\n' +
-                    'exploit - escalate privileges\n' +
-                    'help - list all available commands\n' +
-                    'nmap - reveal all available nodes\n' +
-                    'ssh - connect to a node\n' +
-                    'startx - start the game'
-                );
-            default:
-                return (
-                    'System: ' +
-                    args[0] +
-                    " - Command not found, type 'help' to get all available commands"
-                );
+            } else {
+                return 'System: You can only use these commands in the game!'
+            }
         }
     }
 
