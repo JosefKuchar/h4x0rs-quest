@@ -93,6 +93,7 @@ export default class GameScreen extends Screen {
 
         // Reveal the first node
         start.reveal();
+        start.root = true;
         start.connected = true;
 
         // Generate connections
@@ -128,6 +129,13 @@ export default class GameScreen extends Screen {
         this.exploitRunning = false;
         this.currentNode.root = true;
         this.score += 50;
+        this.timeLeft += 10;
         this.currentExploit = undefined;
+
+        // Regenerate nodes
+        if (!this.nodes.some(node => !node.root)) {
+            this.nodes = new Array();
+            this.generateNodes();
+        }
     }
 }

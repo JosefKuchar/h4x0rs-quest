@@ -44,14 +44,17 @@ export default class Node {
         this.ctx.fillText(this.ip, this.x, this.y + 50);
         this.ctx.stroke();
         this.ctx.setLineDash([]);
+
+        if (this.root) {
+            this.ctx.beginPath();
+            this.ctx.closePath();
+            this.ctx.arc(this.x, this.y, 25, 0, 2 * Math.PI);
+            this.ctx.stroke();
+        }
     }
 
     reveal() {
         this.revealed = true;
-    }
-
-    exploit() {
-        
     }
 
     revealOthers() {

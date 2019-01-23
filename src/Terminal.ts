@@ -54,6 +54,9 @@ export default class Terminal {
             const result = this.game.boot();
             if (result) this.bootSequence();
             else return 'System: Game is already running!';
+        }
+        else if (this.game.screens.game.exploitRunning) {
+            return "System: You can't execute commands while the exploit is running!"
         } else {
             if (this.game.state == State.Game) {
                 switch (args[0]) {
@@ -90,7 +93,6 @@ export default class Terminal {
                         return (
                             'AVAILABLE COMMANDS: \n' +
                             'clear - clear the console\n' +
-                            'exit - disconnect from current node\n' +
                             'exploit - escalate privileges\n' +
                             'help - list all available commands\n' +
                             'nmap - reveal all available nodes\n' +
