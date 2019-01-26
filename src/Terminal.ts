@@ -237,6 +237,7 @@ export default class Terminal {
             'Mounting Other NFS Filesystems',
             'Booting done',
             '---------------------------------------------------------------',
+            'Others from your squad are doing the "dirty job", you must gain superuser privileges on all onboard computers for future analysis',
             "Type 'help' to get all available commands"
         ];
         parts.forEach((part, i) => {
