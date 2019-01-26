@@ -17,7 +17,9 @@ export default class Terminal {
         inputElement.onkeydown = e => {
             if (e.keyCode == 13) {
                 this.writeLine(
-                    'h4x0r@' +
+                    (this.game.screens.game.currentNode.root
+                        ? 'root@'
+                        : 'h4x0r@') +
                         this.game.screens.game.currentNode.ip +
                         '&gt; ' +
                         inputElement.value
@@ -54,9 +56,8 @@ export default class Terminal {
             const result = this.game.boot();
             if (result) this.bootSequence();
             else return 'System: Game is already running!';
-        }
-        else if (this.game.screens.game.exploitRunning) {
-            return "System: You can't execute commands while the exploit is running!"
+        } else if (this.game.screens.game.exploitRunning) {
+            return "System: You can't execute commands while the exploit is running!";
         } else {
             if (this.game.state == State.Game) {
                 switch (args[0]) {
@@ -106,8 +107,10 @@ export default class Terminal {
                             " - Command not found, type 'help' to get all available commands"
                         );
                 }
+            } else if (this.game.state == State.End) {
+                return 'Press F5 if you want to play again'
             } else {
-                return 'System: You can only use these commands in the game!'
+                return "System: You can only use these commands in the game!\nType 'startx' to continue";
             }
         }
     }
@@ -130,6 +133,7 @@ export default class Terminal {
                 '| |__| | |_| |  __/\\__ \\ |_ \n' +
                 ' \\___\\_\\\\__,_|\\___||___/\\__|\n',
             'Made by Josef Kuchař - <a href="//josefkuchar.com">josefkuchar.com</a> - for GWGC2018/19',
+            'Press F11 to enter fullscreen',
             "Type 'startx' to continue"
         ];
 

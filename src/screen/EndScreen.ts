@@ -18,6 +18,6 @@ export default class EndScreen extends Screen {
         this.ctx.fillText('Final score: ' + this.score, 1024 / 2, 768 / 2);
         this.ctx.textAlign = 'center';
         this.ctx.font = '20px monospace';
-        this.ctx.fillText('Refresh to restart the game', 1024 / 2, 768 - 20);
+        this.ctx.fillText('Refresh (F5) to restart the game', 1024 / 2, 768 - 20);
     }
 }

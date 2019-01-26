@@ -4,6 +4,8 @@ import Game, { State } from '../Game';
 import Node from '../Node';
 import Exploit from '../Exploit';
 import AutomaticExploit from '../exploit/AutomaticExploit';
+import ClickExploit from '../exploit/ClickExploit';
+import FastExploit from '../exploit/FastExploit';
 
 export default class GameScreen extends Screen {
     game: Game;
@@ -20,7 +22,7 @@ export default class GameScreen extends Screen {
         this.score = 0;
         this.timeLeft = 60;
         this.nodes = new Array();
-        this.currentNode = new Node(0,0,'err',this.ctx); // Placeholder node
+        this.currentNode = new Node(0, 0, 'err', this.ctx); // Placeholder node
         this.generateNodes();
         this.exploitRunning = false;
         this.currentExploit = new AutomaticExploit(this.ctx, this);
@@ -65,8 +67,7 @@ export default class GameScreen extends Screen {
 
         // Exploit
         if (this.exploitRunning === true) {
-            if (this.currentExploit)
-                this.currentExploit.render();
+            if (this.currentExploit) this.currentExploit.render();
         }
 
         // End the game
@@ -79,13 +80,18 @@ export default class GameScreen extends Screen {
     generateNodes() {
         let start = new Node(512, 650, '127.0.0.1', this.ctx);
         this.nodes.push(start);
-        
+
         // Generate grid
         for (let x = 0; x < 5; x++) {
             for (let y = 0; y < 4; y++) {
                 if (x == 2 && y == 0) continue;
                 if (Math.random() <= 0.2) {
-                    const node = new Node(100 + x * 206, 650 - y * 170, this.randomIp(), this.ctx);
+                    const node = new Node(
+                        100 + x * 206,
+                        650 - y * 170,
+                        this.randomIp(),
+                        this.ctx
+                    );
                     this.nodes.push(node);
                 }
             }
@@ -97,7 +103,7 @@ export default class GameScreen extends Screen {
         start.connected = true;
 
         // Generate connections
-        let queue = [start]
+        let queue = [start];
 
         while (queue.length > 0) {
             let current = queue.shift() as Node;
@@ -109,20 +115,31 @@ export default class GameScreen extends Screen {
                 current.connections.push(node);
                 node.connected = true;
                 queue.push(node);
-            } while (Math.random() < 0.5)
+            } while (Math.random() < 0.5);
         }
 
         // Set first node as current
         this.currentNode = start;
+
+        // Little hack
+        if (this.nodes.length == 1) {
+            this.exploitDone();
+        }
     }
 
     randomIp() {
-        return new Array(4).fill(0).map(x => Math.floor(Math.random() * 256)).join('.');
+        return new Array(4)
+            .fill(0)
+            .map(x => Math.floor(Math.random() * 256))
+            .join('.');
     }
 
     exploit() {
+        const exploits = [AutomaticExploit, ClickExploit, FastExploit];
         this.exploitRunning = true;
-        this.currentExploit = new AutomaticExploit(this.ctx, this);
+        this.currentExploit = new exploits[
+            (Math.floor(Math.random() * exploits.length))
+        ](this.ctx, this);
     }
 
     exploitDone() {

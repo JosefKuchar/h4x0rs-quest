@@ -24,6 +24,10 @@ module.exports = {
             {
                 from: 'src/style.css',
                 to: 'style.css'
+            },
+            {
+                from: 'src/favicon.ico',
+                to: 'favicon.ico'
             }
         ]),
         new HtmlWebpackPlugin({
